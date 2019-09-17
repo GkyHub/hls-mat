@@ -71,7 +71,7 @@ namespace hls{
     }
 
     template<typename T, vid_t N>
-    inline void binary_iterator(StaticVector<T, N> &v1, StaticVector<T, N> &v2,
+    inline void ternary_iterator(StaticVector<T, N> &v1, StaticVector<T, N> &v2,
         StaticVector<T, N> &v3, std::function<void(T &, T &, T &)> f)
     {
         for (vid_t i = 0; i < N; i++)
@@ -102,6 +102,77 @@ namespace hls{
     {
         StaticVector<T, N> res;
         binary_iterator(res, *this, [](T &a, T &b){a = b + v;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator-(const T &v)
+    {
+        StaticVector<T, N> res;
+        binary_iterator(res, *this, [](T &a, T &b){a = b - v;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator*(const T &v)
+    {
+        StaticVector<T, N> res;
+        binary_iterator(res, *this, [](T &a, T &b){a = b * v;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator/(const T &v)
+    {
+        StaticVector<T, N> res;
+        binary_iterator(res, *this, [](T &a, T &b){a = b / v;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator=(const StaticVector<T, N> &vec)
+    {
+        binary_iterator(*this, vec, [](T &a, T &b){a = b});
+        return *this;
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator+(const StaticVector<T, N> &vec)
+    {
+        StaticVector<T, N> res;
+        ternary_iterator(res, *this, vec, [](T &a, T &b, T &c){a = b + c;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator-(const StaticVector<T, N> &vec)
+    {
+        StaticVector<T, N> res;
+        ternary_iterator(res, *this, vec, [](T &a, T &b, T &c){a = b - c;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator*(const StaticVector<T, N> &vec)
+    {
+        StaticVector<T, N> res;
+        ternary_iterator(res, *this, vec, [](T &a, T &b, T &c){a = b * c;});
+    }
+
+    template<typename T, vid_t N>
+    StaticVector<T, N> StaticVector<T, N>::operator/(const StaticVector<T, N> &vec)
+    {
+        StaticVector<T, N> res;
+        ternary_iterator(res, *this, vec, [](T &a, T &b, T &c){a = b / c;});
+    }
+
+    template<typename T, vid_t N>
+    bool StaticVector<T, N>::operator==(const StaticVector<T, N> &vec)
+    {
+        bool res = true;
+        binary_iterator(*this, vec, [](T &a, T &b){
+            if (a == b) res = false;
+        });
+    }
+
+    template<typename T, vid_t N>
+    bool StaticVector<T, N>::operator!=(const StaticVector<T, N> &vec)
+    {
+        return !((*this) == vec);
     }
 }
 
